@@ -26,7 +26,7 @@ export async function register(req, res) {
 
     const exists = await User.findOne({ username: normalized });
     if (exists) {
-      return res.status(409).json({ error: 'Esse nome ja esta em uso.' });
+      return res.status(409).json({ error: 'Esse nome já está em uso.' });
     }
 
     const user = new User({ username: normalized, displayName });

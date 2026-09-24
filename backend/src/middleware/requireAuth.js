@@ -10,7 +10,7 @@ export function requireAuth(req, res, next) {
   if (scheme !== 'Bearer' || !token) {
     return res
       .status(401)
-      .json({ error: 'Autenticacao necessaria. Faca login.' });
+      .json({ error: 'Autenticação necessária. Faça login.' });
   }
 
   try {
@@ -18,6 +18,6 @@ export function requireAuth(req, res, next) {
     req.user = { id: payload.sub, displayName: payload.displayName };
     next();
   } catch {
-    return res.status(401).json({ error: 'Sessao invalida ou expirada.' });
+    return res.status(401).json({ error: 'Sessão inválida ou expirada.' });
   }
 }

@@ -66,5 +66,5 @@ export function quit(req, res) {
   if (outcome.error) {
     return res.status(outcome.code || 400).json({ error: outcome.error });
   }
-  return res.json({ ok: true, message: 'Partida encerrada. Pontuacao nao salva.' });
+  return res.json({ ok: true, message: 'Partida encerrada. Pontuação não salva.' });
 }

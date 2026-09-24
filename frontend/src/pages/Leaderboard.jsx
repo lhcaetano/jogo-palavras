@@ -44,7 +44,7 @@ export default function Leaderboard() {
 
         {status === 'ready' && ranking.length === 0 && (
           <p className="muted">
-            Ainda nao ha partidas registradas. Seja o primeiro a jogar!
+            Ainda não há partidas registradas. Seja o primeiro a jogar!
           </p>
         )}
 

@@ -11,7 +11,7 @@ export default function Menu() {
       <h1>Jogo de Adivinhar Palavras</h1>
       <div className="card">
         <p className="center">
-          Ola, <strong>{user?.displayName}</strong>! O que vamos fazer?
+          Olá, <strong>{user?.displayName}</strong>! O que vamos fazer?
         </p>
         <button className="btn" onClick={() => navigate('/jogar')}>
           Jogar
@@ -30,9 +30,9 @@ export default function Menu() {
       <div className="card">
         <h2>Como jogar</h2>
         <p className="muted">
-          Sao 10 palavras. Cada uma vem com uma dica de tema. Escolha uma letra
+          São 10 palavras. Cada uma vem com uma dica de tema. Escolha uma letra
           por vez: acertar a palavra vale +10 pontos, cada letra errada vale -1.
-          Voce tem 5 erros por palavra. Se errar todos, o jogo acaba. Boa sorte!
+          Você tem 5 erros por palavra. Se errar todos, o jogo acaba. Boa sorte!
         </p>
       </div>
       <Footer />

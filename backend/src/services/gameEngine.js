@@ -109,9 +109,9 @@ export function startGame(user) {
 // Recupera uma partida garantindo que pertence ao usuario.
 function getOwnedGame(gameId, user) {
   const game = games.get(gameId);
-  if (!game) return { error: 'Partida nao encontrada.', code: 404 };
+  if (!game) return { error: 'Partida não encontrada.', code: 404 };
   if (game.userId !== user.id) {
-    return { error: 'Essa partida nao e sua.', code: 403 };
+    return { error: 'Essa partida não é sua.', code: 403 };
   }
   return { game };
 }
@@ -125,12 +125,12 @@ function buildSummary(game) {
 
   if (game.endReason === 'completed') {
     if (allGuessed) {
-      message = `CAMPEAO! Parabens, ${game.displayName}! Voce acertou todas as ${game.words.length} palavras!`;
+      message = `CAMPEÃO! Parabéns, ${game.displayName}! Você acertou todas as ${game.words.length} palavras!`;
     } else {
-      message = `Parabens, ${game.displayName}! Voce completou o jogo com ${game.wordsGuessed} de ${game.words.length} palavras.`;
+      message = `Parabéns, ${game.displayName}! Você completou o jogo com ${game.wordsGuessed} de ${game.words.length} palavras.`;
     }
   } else {
-    message = `Fim de jogo, ${game.displayName}! Voce acertou ${game.wordsGuessed} palavra(s) antes de esgotar as tentativas. Nao desista, tente de novo!`;
+    message = `Fim de jogo, ${game.displayName}! Você acertou ${game.wordsGuessed} palavra(s) antes de esgotar as tentativas. Não desista, tente de novo!`;
   }
 
   return {
@@ -151,7 +151,7 @@ export function guessLetter(gameId, user, rawLetter) {
   const game = owned.game;
 
   if (game.status !== 'playing') {
-    return { error: 'Essa partida ja terminou.', code: 400 };
+    return { error: 'Essa partida já terminou.', code: 400 };
   }
 
   const letter = String(rawLetter || '').toUpperCase().trim();

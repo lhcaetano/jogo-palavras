@@ -65,7 +65,7 @@ export default function Game() {
       } else if (res.result === 'miss') {
         setFlash('Letra errada. -1 ponto');
       } else if (res.result === 'repeated') {
-        setFlash('Voce ja tentou essa letra.');
+        setFlash('Você já tentou essa letra.');
       }
     } catch (err) {
       setError(err.message);
@@ -80,7 +80,7 @@ export default function Game() {
       return;
     }
     const ok = window.confirm(
-      'Encerrar a partida? Sua pontuacao desta partida sera perdida e nao entrara no ranking.'
+      'Encerrar a partida? Sua pontuação desta partida será perdida e não entrará no ranking.'
     );
     if (!ok) return;
     try {
@@ -117,10 +117,10 @@ export default function Game() {
     const champion = summary.champion;
     return (
       <div className="container">
-        <h1>{champion ? 'Campeao!' : 'Fim de jogo'}</h1>
+        <h1>{champion ? 'Campeão!' : 'Fim de jogo'}</h1>
         <div className={champion ? 'card champion-card' : 'card'}>
           {champion && (
-            <div className="trophy" role="img" aria-label="Trofeu de campeao">
+            <div className="trophy" role="img" aria-label="Troféu de campeão">
               🏆
             </div>
           )}
@@ -132,7 +132,7 @@ export default function Game() {
           )}
           <div className="scoreboard" style={{ justifyContent: 'center', gap: 24 }}>
             <span>
-              Pontuacao final: <span className="points">{summary.points}</span>
+              Pontuação final: <span className="points">{summary.points}</span>
             </span>
           </div>
           <p className="muted">

@@ -61,7 +61,7 @@ export default function Login() {
           </button>
         </form>
         <p className="muted">
-          {isRegister ? 'Ja tem conta? ' : 'Ainda nao tem conta? '}
+          {isRegister ? 'Já tem conta? ' : 'Ainda não tem conta? '}
           <a
             href="#"
             onClick={(e) => {
