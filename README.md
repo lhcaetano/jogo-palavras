@@ -55,3 +55,30 @@ docker compose down -v
 Os dados do MongoDB ficam num volume Docker nomeado (`mongodb-data`).
 Ao reiniciar com `docker compose down` e `up`, os dados sao preservados.
 Somente `docker compose down -v` apaga os dados.
+
+## Deploy (producao, custo zero)
+
+Arquitetura:
+
+- Frontend (React/Vite) -> Vercel (`*.vercel.app`)
+- Backend (Node/Express) -> Render (`*.onrender.com`)
+- Banco (MongoDB) -> MongoDB Atlas (free tier)
+
+Arquivos de apoio:
+
+- `render.yaml` - blueprint do backend no Render
+- `frontend/vercel.json` - configuracao do frontend na Vercel
+- `backend/Dockerfile` - imagem de producao (opcional; o Render tambem roda como Node nativo)
+
+Variaveis de ambiente no Render (backend):
+
+- `MONGO_URI` - string de conexao do MongoDB Atlas
+- `JWT_SECRET` - segredo forte (ex.: `openssl rand -hex 32`)
+- `CORS_ORIGIN` - URL do frontend na Vercel (ex.: `https://meu-jogo.vercel.app`)
+
+Variaveis de ambiente na Vercel (frontend):
+
+- `VITE_API_URL` - URL do backend no Render (ex.: `https://jogo-palavras-api.onrender.com`)
+
+Observacao: no plano gratuito do Render, a API "dorme" apos ~15 min de
+inatividade e leva ~30-50s para responder no primeiro acesso seguinte.
