@@ -22,28 +22,58 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 // Chave: gameId. Valor: objeto de estado da partida.
 const games = new Map();
 
-// Sorteia n palavras sem repetir, cada uma com sua dica (tema).
+// Embaralha um array no lugar (Fisher-Yates com aleatoriedade cripto).
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = crypto.randomInt(0, i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Sorteia n palavras sem repetir, com DISTRIBUICAO BALANCEADA por tema.
+//
+// Em vez de sortear n palavras de um monte unico (o que pode concentrar
+// varias palavras no mesmo tema), distribuimos as escolhas entre os temas
+// em rodadas: em cada rodada pegamos no maximo uma palavra de cada tema.
+// Isso garante o maximo de variedade de dicas por partida.
 function drawWords(n) {
-  // Monta a lista completa de {hint, word}, evitando palavras duplicadas
-  // (ex.: PORTA aparece em mais de um tema).
-  const pool = [];
+  // Prepara, para cada tema, sua lista de palavras ja embaralhada.
+  // Deduplica palavras que porventura aparecam em mais de um tema.
   const seen = new Set();
-  for (const theme of THEMES) {
-    for (const word of theme.words) {
-      if (!seen.has(word)) {
-        seen.add(word);
-        pool.push({ hint: theme.hint, word });
+  const buckets = THEMES.map((theme) => {
+    const words = shuffle(
+      theme.words.filter((w) => {
+        if (seen.has(w)) return false;
+        seen.add(w);
+        return true;
+      })
+    );
+    return { hint: theme.hint, words };
+  });
+
+  // Embaralha a ordem dos temas para nao privilegiar sempre os primeiros.
+  shuffle(buckets);
+
+  // Distribui em rodadas: uma palavra por tema por rodada, ate atingir n
+  // ou esgotar as palavras disponiveis.
+  const drawn = [];
+  let progressed = true;
+  while (drawn.length < n && progressed) {
+    progressed = false;
+    for (const bucket of buckets) {
+      if (drawn.length >= n) break;
+      const word = bucket.words.pop();
+      if (word) {
+        drawn.push({ hint: bucket.hint, word });
+        progressed = true;
       }
     }
   }
 
-  // Embaralha (Fisher-Yates) e pega as n primeiras.
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = crypto.randomInt(0, i + 1);
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-
-  return pool.slice(0, Math.min(n, pool.length));
+  // Embaralha o resultado final para a ordem das palavras nao seguir
+  // sempre a mesma sequencia de temas.
+  return shuffle(drawn).slice(0, Math.min(n, drawn.length));
 }
 
 // Monta a mascara da palavra revelando apenas as letras ja acertadas.
@@ -262,3 +292,6 @@ export const GAME_CONFIG = {
   POINTS_PER_WORD,
   PENALTY_PER_ERROR,
 };
+
+// Exportado para testes (sorteio balanceado).
+export { drawWords };

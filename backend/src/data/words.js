@@ -4,8 +4,9 @@
 // As palavras usam apenas letras A-Z, sem acentos e sem espacos,
 // para combinar com a mecanica de adivinhacao letra a letra.
 //
-// Para adicionar palavras, basta incluir novas entradas nos arrays.
-// Mantenha tudo em MAIUSCULAS e sem acentos.
+// Regras de manutencao:
+// - Mantenha tudo em MAIUSCULAS e sem acentos.
+// - Nao repita a mesma palavra em temas diferentes (sem duplicatas).
 
 export const THEMES = [
   {
@@ -17,7 +18,7 @@ export const THEMES = [
       'PNEU',
       'FREIO',
       'CAMBIO',
-      'PORTA',
+      'PORTAMALAS',
       'RETROVISOR',
       'ESCAPAMENTO',
       'PARABRISA',
@@ -81,6 +82,81 @@ export const THEMES = [
       'PAREDE',
       'ESCADA',
       'GARAGEM',
+    ],
+  },
+  {
+    hint: 'Animais',
+    words: [
+      'CACHORRO',
+      'GATO',
+      'ELEFANTE',
+      'GIRAFA',
+      'LEAO',
+      'TIGRE',
+      'CAVALO',
+      'COELHO',
+      'MACACO',
+      'TARTARUGA',
+    ],
+  },
+  {
+    hint: 'Cores',
+    words: [
+      'VERMELHO',
+      'AZUL',
+      'AMARELO',
+      'VERDE',
+      'LARANJA',
+      'ROXO',
+      'PRETO',
+      'BRANCO',
+      'ROSA',
+      'MARROM',
+    ],
+  },
+  {
+    hint: 'Esportes',
+    words: [
+      'FUTEBOL',
+      'VOLEI',
+      'BASQUETE',
+      'NATACAO',
+      'TENIS',
+      'CORRIDA',
+      'CICLISMO',
+      'JUDO',
+      'SURFE',
+      'HANDEBOL',
+    ],
+  },
+  {
+    hint: 'Instrumentos musicais',
+    words: [
+      'VIOLAO',
+      'GUITARRA',
+      'BATERIA',
+      'PIANO',
+      'FLAUTA',
+      'TROMPETE',
+      'SAXOFONE',
+      'VIOLINO',
+      'CAVAQUINHO',
+      'PANDEIRO',
+    ],
+  },
+  {
+    hint: 'Natureza e Clima',
+    words: [
+      'CHUVA',
+      'VENTO',
+      'TROVAO',
+      'RELAMPAGO',
+      'NEVE',
+      'ARCOIRIS',
+      'NUVEM',
+      'TEMPESTADE',
+      'ORVALHO',
+      'GRANIZO',
     ],
   },
 ];
