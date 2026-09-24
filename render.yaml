@@ -1,0 +1,24 @@
+# Blueprint do Render para o backend.
+# Ao conectar o repositorio no Render, ele le este arquivo e cria o servico.
+# As variaveis marcadas com sync:false devem ser preenchidas por voce no
+# painel do Render (sao segredos: string do Mongo e segredo do JWT).
+
+services:
+  - type: web
+    name: jogo-palavras-api
+    runtime: node
+    plan: free
+    # O backend fica na subpasta backend/ do repositorio.
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false

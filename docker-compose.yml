@@ -1,0 +1,89 @@
+# ============================================================
+# Jogo de Adivinhar Palavras (estilo forca)
+# Stack: React (Vite) + Node/Express + MongoDB
+#
+# Como usar (desenvolvimento com hot reload):
+#   docker compose up -d
+#
+# Acesso pelo navegador (Windows/WSL):
+#   Frontend:  http://localhost:5173
+#   API:       http://localhost:3001
+#
+# Parar (mantendo os dados do banco):
+#   docker compose down
+#
+# Parar e APAGAR os dados do banco:
+#   docker compose down -v
+# ============================================================
+
+services:
+
+  mongodb:
+    image: mongo:7
+    container_name: jp-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-jogo}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-jogo123}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-jogo_palavras}
+    ports:
+      - "27017:27017"
+    volumes:
+      # Volume nomeado = dados persistentes entre reinicializacoes
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    image: node:20-alpine
+    container_name: jp-backend
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      MONGO_URI: mongodb://${MONGO_USER:-jogo}:${MONGO_PASSWORD:-jogo123}@mongodb:27017/${MONGO_DB:-jogo_palavras}?authSource=admin
+      JWT_SECRET: ${JWT_SECRET:-troque-este-segredo-em-producao}
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      # Mantem node_modules dentro do container (nao sobrescreve com o host)
+      - backend-node-modules:/app/node_modules
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  frontend:
+    image: node:20-alpine
+    container_name: jp-frontend
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    environment:
+      # URL da API usada pelo navegador (host), nao pelo container
+      VITE_API_URL: http://localhost:3001
+      # Necessario para hot reload estavel em Docker + WSL
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  mongodb-data:
+  backend-node-modules:
+  frontend-node-modules:
+
+networks:
+  default:
+    name: jogo-palavras-network

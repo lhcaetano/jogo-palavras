@@ -1,0 +1,20 @@
+# Dependencias
+node_modules/
+
+# Variaveis de ambiente com segredos
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build do frontend
+frontend/dist/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
