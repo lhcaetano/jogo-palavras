@@ -114,11 +114,19 @@ export default function Game() {
 
   // Tela de fim de partida.
   if (status === 'finished' && summary) {
+    const champion = summary.champion;
     return (
       <div className="container">
-        <h1>Fim de jogo</h1>
-        <div className="card">
-          <p className="center">{summary.message}</p>
+        <h1>{champion ? 'Campeao!' : 'Fim de jogo'}</h1>
+        <div className={champion ? 'card champion-card' : 'card'}>
+          {champion && (
+            <div className="trophy" role="img" aria-label="Trofeu de campeao">
+              🏆
+            </div>
+          )}
+          <p className={champion ? 'champion-message' : 'center'}>
+            {summary.message}
+          </p>
           {revealedWord && (
             <p className="muted">A palavra era: {revealedWord}</p>
           )}

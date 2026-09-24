@@ -119,11 +119,13 @@ function getOwnedGame(gameId, user) {
 // Monta o resumo final da partida (estatisticas + mensagem).
 function buildSummary(game) {
   const allGuessed = game.wordsGuessed === game.words.length;
+  // E campeao quem completou o jogo (10 palavras) acertando TODAS elas.
+  const champion = game.endReason === 'completed' && allGuessed;
   let message;
 
   if (game.endReason === 'completed') {
     if (allGuessed) {
-      message = `Incrivel, ${game.displayName}! Voce acertou todas as ${game.words.length} palavras!`;
+      message = `CAMPEAO! Parabens, ${game.displayName}! Voce acertou todas as ${game.words.length} palavras!`;
     } else {
       message = `Parabens, ${game.displayName}! Voce completou o jogo com ${game.wordsGuessed} de ${game.words.length} palavras.`;
     }
@@ -137,6 +139,7 @@ function buildSummary(game) {
     wordsPlayed:
       game.endReason === 'completed' ? game.words.length : game.currentIndex + 1,
     endReason: game.endReason,
+    champion,
     message,
   };
 }

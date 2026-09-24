@@ -205,3 +205,39 @@ th {
   color: #64748b;
   letter-spacing: 0.3px;
 }
+
+/* Destaque de campeao (acertou todas as 10 palavras) */
+.champion-card {
+  border: 2px solid #fbbf24;
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.35);
+}
+
+.trophy {
+  text-align: center;
+  font-size: 72px;
+  line-height: 1;
+  margin: 8px 0 4px;
+  animation: trophy-pop 0.6s ease-out;
+}
+
+.champion-message {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fbbf24;
+  margin: 8px 0 16px;
+}
+
+@keyframes trophy-pop {
+  0% {
+    transform: scale(0.3) rotate(-15deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15) rotate(8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
