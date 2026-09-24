@@ -76,6 +76,7 @@ export default function Login() {
           <Link to="/leaderboard">Ver o ranking</Link>
         </p>
       </div>
+      <footer className="credit">Desenvolvido por Luis Henrique Caetano</footer>
     </div>
   );
 }
