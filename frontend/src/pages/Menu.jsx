@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import Footer from '../components/Footer.jsx';
 
 export default function Menu() {
   const { user, logout } = useAuth();
@@ -34,6 +35,7 @@ export default function Menu() {
           Voce tem 5 erros por palavra. Se errar todos, o jogo acaba. Boa sorte!
         </p>
       </div>
+      <Footer />
     </div>
   );
 }

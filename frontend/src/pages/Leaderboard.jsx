@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api.js';
+import Footer from '../components/Footer.jsx';
 
 // Formata a data/hora para exibicao (dia e hora).
 function formatDateTime(value) {
@@ -82,6 +83,7 @@ export default function Leaderboard() {
           Voltar
         </button>
       </div>
+      <Footer />
     </div>
   );
 }

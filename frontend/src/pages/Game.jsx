@@ -4,6 +4,7 @@ import { api } from '../services/api.js';
 import WordDisplay from '../components/WordDisplay.jsx';
 import Alphabet from '../components/Alphabet.jsx';
 import ScoreBoard from '../components/ScoreBoard.jsx';
+import Footer from '../components/Footer.jsx';
 
 export default function Game() {
   const navigate = useNavigate();
@@ -106,6 +107,7 @@ export default function Game() {
             Voltar ao menu
           </button>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -142,6 +144,7 @@ export default function Game() {
             Voltar ao menu
           </button>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -175,6 +178,7 @@ export default function Game() {
           Encerrar partida
         </button>
       </div>
+      <Footer />
     </div>
   );
 }

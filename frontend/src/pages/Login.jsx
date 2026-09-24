@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import Footer from '../components/Footer.jsx';
 
 export default function Login() {
   const { login, register } = useAuth();
@@ -76,7 +77,7 @@ export default function Login() {
           <Link to="/leaderboard">Ver o ranking</Link>
         </p>
       </div>
-      <footer className="credit">Desenvolvido por Luis Henrique Caetano</footer>
+      <Footer />
     </div>
   );
 }
