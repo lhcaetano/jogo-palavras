@@ -92,22 +92,28 @@ h2 {
   margin: 12px 0;
 }
 
-/* Palavra oculta (mascara) */
+/* Palavra oculta (mascara)
+   As caixas encolhem para a palavra caber sempre em UMA linha, mesmo em
+   telas estreitas. Palavras curtas ficam com caixas maiores (ate um teto);
+   palavras longas encolhem o suficiente para nao quebrar a linha. */
 .word {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 2%;
+  flex-wrap: nowrap;
   margin: 24px 0;
+  width: 100%;
 }
 
 .letter-box {
-  width: 40px;
-  height: 48px;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 44px;
+  aspect-ratio: 5 / 6;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: clamp(14px, 5vw, 24px);
   font-weight: 700;
   border-bottom: 3px solid #6366f1;
   text-transform: uppercase;
@@ -294,17 +300,8 @@ th {
     font-size: 15px;
   }
 
-  /* Palavra oculta: caixas menores para caber mais letras por linha */
-  .word {
-    gap: 6px;
-    margin: 20px 0;
-  }
-
-  .letter-box {
-    width: 32px;
-    height: 40px;
-    font-size: 20px;
-  }
+  /* A palavra oculta agora usa caixas flexiveis (ver regra base .word/
+     .letter-box), entao nao fixamos larguras aqui. */
 
   /* Placar em coluna quando nao couber em linha */
   .scoreboard {
@@ -329,12 +326,6 @@ th {
   .key {
     padding: 9px 0;
     font-size: 14px;
-  }
-
-  .letter-box {
-    width: 28px;
-    height: 36px;
-    font-size: 18px;
   }
 
   /* Placar empilhado verticalmente e centralizado */
