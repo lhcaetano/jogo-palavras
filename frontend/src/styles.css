@@ -197,6 +197,15 @@ th {
   text-align: center;
 }
 
+/* Observacao discreta (ex.: acima do ranking) */
+.obs {
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+  margin: -8px 0 12px;
+  font-style: italic;
+}
+
 /* Credito discreto no rodape da tela de login */
 .credit {
   text-align: center;

@@ -38,6 +38,7 @@ export default function Leaderboard() {
   return (
     <div className="container">
       <h1>Ranking</h1>
+      <p className="obs">Obs.: apenas o melhor resultado de cada jogador é exibido.</p>
       <div className="card">
         {status === 'loading' && <p className="muted">Carregando ranking...</p>}
         {status === 'error' && <p className="error">{error}</p>}
