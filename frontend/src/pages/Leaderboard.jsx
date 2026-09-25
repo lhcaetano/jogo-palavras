@@ -57,6 +57,7 @@ export default function Leaderboard() {
                 <th>Jogador</th>
                 <th>Pontos</th>
                 <th>Acertos</th>
+                <th>Tentativas</th>
                 <th>Data/Hora</th>
               </tr>
             </thead>
@@ -69,6 +70,7 @@ export default function Leaderboard() {
                   <td>
                     {r.wordsGuessed}/{r.wordsPlayed}
                   </td>
+                  <td>{r.attempts}</td>
                   <td>{formatDateTime(r.playedAt)}</td>
                 </tr>
               ))}

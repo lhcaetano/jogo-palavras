@@ -23,6 +23,8 @@ export async function getLeaderboard(req, res) {
           wordsPlayed: { $first: '$wordsPlayed' },
           endReason: { $first: '$endReason' },
           playedAt: { $first: '$playedAt' },
+          // Numero de partidas que o jogador ja finalizou.
+          attempts: { $sum: 1 },
         },
       },
       { $sort: { points: -1, playedAt: 1 } },
@@ -37,6 +39,7 @@ export async function getLeaderboard(req, res) {
       wordsPlayed: s.wordsPlayed,
       endReason: s.endReason,
       playedAt: s.playedAt,
+      attempts: s.attempts,
     }));
 
     return res.json({ ranking });
