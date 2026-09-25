@@ -198,6 +198,17 @@ th {
   text-align: center;
 }
 
+/* Mensagem rapida de feedback durante o jogo (acerto/erro/letra repetida).
+   Mantem espaco reservado mesmo quando vazia, para o teclado nao "pular". */
+.flash {
+  text-align: center;
+  margin: 12px 0;
+  min-height: 2.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .muted {
   color: #94a3b8;
   text-align: center;

@@ -172,7 +172,7 @@ export default function Game() {
 
         <WordDisplay mask={word.mask} />
 
-        {flash && <p className="center">{flash}</p>}
+        <p className="flash">{flash || '\u00A0'}</p>
 
         <Alphabet
           alphabet={alphabet}
