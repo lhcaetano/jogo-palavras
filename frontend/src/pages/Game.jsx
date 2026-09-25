@@ -61,7 +61,7 @@ export default function Game() {
       if (res.word) setWord(res.word);
 
       if (res.result === 'correct') {
-        setFlash(`Acertou a palavra "${res.solvedWord}"! +10 pontos`);
+        setFlash(`Acertou a palavra "${res.solvedWord}". +10 pontos`);
       } else if (res.result === 'miss') {
         setFlash('Letra errada. -1 ponto');
       } else if (res.result === 'repeated') {
