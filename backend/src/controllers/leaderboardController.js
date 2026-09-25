@@ -9,9 +9,13 @@ export async function getLeaderboard(req, res) {
     const limit = Math.min(parseInt(req.query.limit, 10) || 50, 100);
 
     // Agregacao:
-    // 1. Ordena todas as partidas pela melhor pontuacao (e mais antiga em empate).
-    // 2. Agrupa por usuario, mantendo a primeira (= melhor) partida de cada um.
-    // 3. Reordena o resultado e limita.
+    // 1. Ordena todas as partidas pela melhor pontuacao (e mais antiga em empate),
+    //    para que o $first de cada grupo seja a melhor partida do jogador.
+    // 2. Agrupa por usuario (melhor partida + total de tentativas).
+    // 3. Ordena o ranking final por:
+    //    - pontos (maior primeiro)
+    //    - tentativas (menor primeiro): mesmo placar com menos partidas fica na frente
+    //    - data de registro (mais antiga primeiro): quem alcancou primeiro
     const best = await Score.aggregate([
       { $sort: { points: -1, playedAt: 1 } },
       {
@@ -27,7 +31,7 @@ export async function getLeaderboard(req, res) {
           attempts: { $sum: 1 },
         },
       },
-      { $sort: { points: -1, playedAt: 1 } },
+      { $sort: { points: -1, attempts: 1, playedAt: 1 } },
       { $limit: limit },
     ]);
 
