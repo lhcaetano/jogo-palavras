@@ -23,10 +23,9 @@ async function persistScoreIfFinished(game) {
       displayName: game.displayName,
       points: game.points,
       wordsGuessed: game.wordsGuessed,
-      wordsPlayed:
-        game.endReason === 'completed'
-          ? game.words.length
-          : game.currentIndex + 1,
+      // Denominador de "acertos": total de palavras da partida (ex.: 10),
+      // mesmo em caso de game over antes do fim.
+      wordsPlayed: game.words.length,
       endReason: game.endReason,
       playedAt: new Date(),
     });

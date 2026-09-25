@@ -166,8 +166,9 @@ function buildSummary(game) {
   return {
     points: game.points,
     wordsGuessed: game.wordsGuessed,
-    wordsPlayed:
-      game.endReason === 'completed' ? game.words.length : game.currentIndex + 1,
+    // Denominador de "acertos" e sempre o total de palavras da partida (ex.: 10),
+    // independentemente de ter dado game over antes do fim.
+    wordsPlayed: game.words.length,
     endReason: game.endReason,
     champion,
     message,
