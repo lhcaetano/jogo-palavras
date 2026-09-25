@@ -250,3 +250,105 @@ th {
     transform: scale(1) rotate(0deg);
   }
 }
+
+/* ============================================================
+   Responsividade
+   As regras acima valem para telas grandes (desktop/tablet).
+   Abaixo, ajustes progressivos para telas menores.
+   ============================================================ */
+
+/* Permite que a tabela do ranking role horizontalmente em telas
+   estreitas, sem quebrar o layout do restante da pagina. */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tablets e celulares em paisagem (ate 640px) */
+@media (max-width: 640px) {
+  .container {
+    padding: 16px 12px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  .card {
+    padding: 16px;
+    margin: 12px 0;
+  }
+
+  /* Teclado do alfabeto: teclas menores e mais compactas */
+  .alphabet {
+    gap: 6px;
+  }
+
+  .key {
+    padding: 10px 0;
+    font-size: 15px;
+  }
+
+  /* Palavra oculta: caixas menores para caber mais letras por linha */
+  .word {
+    gap: 6px;
+    margin: 20px 0;
+  }
+
+  .letter-box {
+    width: 32px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  /* Placar em coluna quando nao couber em linha */
+  .scoreboard {
+    font-size: 14px;
+    gap: 4px;
+  }
+
+  th,
+  td {
+    padding: 8px 6px;
+    font-size: 13px;
+  }
+}
+
+/* Celulares pequenos (ate 400px) */
+@media (max-width: 400px) {
+  .alphabet {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+  }
+
+  .key {
+    padding: 9px 0;
+    font-size: 14px;
+  }
+
+  .letter-box {
+    width: 28px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  /* Placar empilhado verticalmente e centralizado */
+  .scoreboard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .trophy {
+    font-size: 56px;
+  }
+
+  .champion-message {
+    font-size: 18px;
+  }
+}

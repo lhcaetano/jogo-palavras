@@ -50,32 +50,34 @@ export default function Leaderboard() {
         )}
 
         {status === 'ready' && ranking.length > 0 && (
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Jogador</th>
-                <th>Pontos</th>
-                <th>Acertos</th>
-                <th>Tentativas</th>
-                <th>Data/Hora</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ranking.map((r) => (
-                <tr key={`${r.rank}-${r.displayName}-${r.playedAt}`}>
-                  <td>{r.rank}</td>
-                  <td>{r.displayName}</td>
-                  <td>{r.points}</td>
-                  <td>
-                    {r.wordsGuessed}/{r.wordsPlayed}
-                  </td>
-                  <td>{r.attempts}</td>
-                  <td>{formatDateTime(r.playedAt)}</td>
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Jogador</th>
+                  <th>Pontos</th>
+                  <th>Acertos</th>
+                  <th>Tentativas</th>
+                  <th>Data/Hora</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {ranking.map((r) => (
+                  <tr key={`${r.rank}-${r.displayName}-${r.playedAt}`}>
+                    <td>{r.rank}</td>
+                    <td>{r.displayName}</td>
+                    <td>{r.points}</td>
+                    <td>
+                      {r.wordsGuessed}/{r.wordsPlayed}
+                    </td>
+                    <td>{r.attempts}</td>
+                    <td>{formatDateTime(r.playedAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
         <button
