@@ -4,13 +4,34 @@ import {
   quitGame,
   getGame,
   disposeGame,
+  pullHistoryUpdate,
 } from '../services/gameEngine.js';
 import { Score } from '../models/Score.js';
+import { User } from '../models/User.js';
 
 // POST /api/game/start
-export function start(req, res) {
-  const data = startGame(req.user);
-  return res.status(201).json(data);
+export async function start(req, res) {
+  try {
+    // Carrega o historico de palavras ja acertadas pelo jogador.
+    const user = await User.findById(req.user.id).lean();
+    const history = (user && user.wordHistory) || {};
+    const data = startGame(req.user, history);
+    return res.status(201).json(data);
+  } catch (err) {
+    console.error('[game] Erro ao iniciar partida:', err.message);
+    return res.status(500).json({ error: 'Erro ao iniciar a partida.' });
+  }
+}
+
+// Persiste o historico de palavras do jogador no banco, se houve mudanca.
+async function persistHistory(gameId, user) {
+  const snapshot = pullHistoryUpdate(gameId, user);
+  if (!snapshot) return;
+  try {
+    await User.findByIdAndUpdate(user.id, { wordHistory: snapshot });
+  } catch (err) {
+    console.error('[game] Erro ao salvar historico de palavras:', err.message);
+  }
 }
 
 // Salva a pontuacao no banco quando a partida termina (naturalmente).
@@ -45,6 +66,11 @@ export async function guess(req, res) {
     return res.status(outcome.code || 400).json({ error: outcome.error });
   }
 
+  // Persiste o historico imediatamente se o jogador acertou uma palavra
+  // (a palavra e "bloqueada" assim que acerta, mesmo que a partida termine
+  // depois em game over).
+  await persistHistory(gameId, req.user);
+
   // Se a partida terminou, salva a pontuacao e limpa da memoria.
   if (outcome.status === 'finished') {
     const owned = getGame(gameId, req.user);
@@ -58,7 +84,9 @@ export async function guess(req, res) {
 }
 
 // POST /api/game/:gameId/quit
-// Encerra a partida sem salvar (zera a pontuacao daquela partida).
+// Encerra a partida sem salvar a pontuacao (zera a pontuacao daquela partida).
+// O historico de palavras ja acertadas NAO e desfeito (acertos ja foram
+// persistidos no momento em que ocorreram).
 export function quit(req, res) {
   const { gameId } = req.params;
   const outcome = quitGame(gameId, req.user);

@@ -25,6 +25,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // Historico de palavras JA ACERTADAS pelo jogador, por tema.
+    // Chave = nome do tema (hint); valor = lista de palavras acertadas.
+    // Palavras aqui nao sao mais sorteadas, ate o tema ser "reiniciado".
+    wordHistory: {
+      type: Map,
+      of: [String],
+      default: {},
+    },
   },
   { timestamps: true }
 );

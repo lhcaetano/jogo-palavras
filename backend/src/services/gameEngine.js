@@ -31,25 +31,32 @@ function shuffle(arr) {
   return arr;
 }
 
-// Sorteia n palavras sem repetir, com DISTRIBUICAO BALANCEADA por tema.
+// Sorteia n palavras sem repetir, com DISTRIBUICAO BALANCEADA por tema,
+// EXCLUINDO as palavras que o jogador ja acertou (historico).
 //
-// Em vez de sortear n palavras de um monte unico (o que pode concentrar
-// varias palavras no mesmo tema), distribuimos as escolhas entre os temas
-// em rodadas: em cada rodada pegamos no maximo uma palavra de cada tema.
-// Isso garante o maximo de variedade de dicas por partida.
-function drawWords(n) {
-  // Prepara, para cada tema, sua lista de palavras ja embaralhada.
-  // Deduplica palavras que porventura aparecam em mais de um tema.
+// history: objeto/Map { [tema]: [palavras ja acertadas] }. Para cada tema,
+// as palavras ja acertadas nao entram no sorteio. A regra de negocio (reset
+// ao esgotar) garante que sempre sobra ao menos 1 palavra disponivel por tema.
+function drawWords(n, history = {}) {
+  // Normaliza o historico para um acesso simples por tema -> Set de palavras.
+  const histFor = (hint) => {
+    const arr =
+      history instanceof Map ? history.get(hint) : history[hint];
+    return new Set(Array.isArray(arr) ? arr : []);
+  };
+
+  // Prepara, para cada tema, sua lista de palavras DISPONIVEIS (fora do
+  // historico) ja embaralhada. Deduplica palavras entre temas.
   const seen = new Set();
   const buckets = THEMES.map((theme) => {
-    const words = shuffle(
-      theme.words.filter((w) => {
-        if (seen.has(w)) return false;
-        seen.add(w);
-        return true;
-      })
-    );
-    return { hint: theme.hint, words };
+    const jaAcertadas = histFor(theme.hint);
+    const disponiveis = theme.words.filter((w) => {
+      if (seen.has(w)) return false; // dedup entre temas
+      if (jaAcertadas.has(w)) return false; // ja acertada -> nao sorteia
+      seen.add(w);
+      return true;
+    });
+    return { hint: theme.hint, words: shuffle(disponiveis) };
   });
 
   // Embaralha a ordem dos temas para nao privilegiar sempre os primeiros.
@@ -74,6 +81,24 @@ function drawWords(n) {
   // Embaralha o resultado final para a ordem das palavras nao seguir
   // sempre a mesma sequencia de temas.
   return shuffle(drawn).slice(0, Math.min(n, drawn.length));
+}
+
+// Total de palavras UNICAS por tema (considerando dedup entre temas),
+// usado para saber quando o jogador esgotou um tema.
+function totalWordsByTheme() {
+  const totals = {};
+  const seen = new Set();
+  for (const theme of THEMES) {
+    let count = 0;
+    for (const w of theme.words) {
+      if (!seen.has(w)) {
+        seen.add(w);
+        count += 1;
+      }
+    }
+    totals[theme.hint] = count;
+  }
+  return totals;
 }
 
 // Monta a mascara da palavra revelando apenas as letras ja acertadas.
@@ -102,8 +127,18 @@ function currentWordView(game) {
 }
 
 // Inicia uma nova partida para um usuario.
-export function startGame(user) {
-  const drawn = drawWords(TOTAL_WORDS);
+// history: { [tema]: [palavras ja acertadas] } (opcional).
+export function startGame(user, history = {}) {
+  // Normaliza o historico recebido (Map ou objeto) para um objeto simples
+  // de trabalho, que sera atualizado durante a partida.
+  const workingHistory = {};
+  const entries =
+    history instanceof Map ? history.entries() : Object.entries(history || {});
+  for (const [hint, words] of entries) {
+    workingHistory[hint] = Array.isArray(words) ? [...words] : [];
+  }
+
+  const drawn = drawWords(TOTAL_WORDS, workingHistory);
 
   const gameId = crypto.randomUUID();
   const game = {
@@ -123,6 +158,10 @@ export function startGame(user) {
     wordsGuessed: 0,
     status: 'playing', // 'playing' | 'finished'
     endReason: null, // 'completed' | 'gameover'
+    // Copia de trabalho do historico do jogador; atualizada a cada acerto.
+    history: workingHistory,
+    // Marca que o historico mudou e precisa ser persistido.
+    historyDirty: false,
     createdAt: Date.now(),
   };
 
@@ -175,6 +214,28 @@ function buildSummary(game) {
   };
 }
 
+// Registra uma palavra ACERTADA no historico do jogador (por tema),
+// aplicando a regra de reset: se, ao acertar, o tema ficou completo
+// (todas as palavras acertadas), o historico daquele tema e reiniciado
+// mantendo APENAS a palavra recem-acertada.
+function registerWordInHistory(game, hint, word) {
+  const totals = totalWordsByTheme();
+  const total = totals[hint] || 0;
+
+  const atual = Array.isArray(game.history[hint]) ? game.history[hint] : [];
+  // Evita duplicar a mesma palavra no historico.
+  const semDuplicar = atual.includes(word) ? atual : [...atual, word];
+
+  if (total > 0 && semDuplicar.length >= total) {
+    // Esgotou o tema: reinicia mantendo so a ultima palavra acertada.
+    game.history[hint] = [word];
+  } else {
+    game.history[hint] = semDuplicar;
+  }
+
+  game.historyDirty = true;
+}
+
 // Processa o chute de uma letra.
 export function guessLetter(gameId, user, rawLetter) {
   const owned = getOwnedGame(gameId, user);
@@ -213,6 +274,9 @@ export function guessLetter(gameId, user, rawLetter) {
       round.solved = true;
       game.points += POINTS_PER_WORD;
       game.wordsGuessed += 1;
+      // Bloqueia a palavra acertada no historico do jogador (por tema),
+      // aplicando o reset do tema se ele foi esgotado.
+      registerWordInHistory(game, round.hint, round.word);
       return advanceOrFinish(game, 'correct');
     }
     return {
@@ -285,6 +349,21 @@ export function disposeGame(gameId) {
 // Recupera o estado de uma partida (usado ao salvar a pontuacao).
 export function getGame(gameId, user) {
   return getOwnedGame(gameId, user);
+}
+
+// Retorna o historico atualizado da partida se houve mudanca desde a
+// ultima persistencia (para o controller salvar no banco). Retorna null
+// se nada mudou. Marca como persistido (limpa a flag dirty).
+export function pullHistoryUpdate(gameId, user) {
+  const owned = getOwnedGame(gameId, user);
+  if (owned.error || !owned.game.historyDirty) return null;
+  owned.game.historyDirty = false;
+  // Retorna uma copia rasa para o controller persistir.
+  const snapshot = {};
+  for (const [hint, words] of Object.entries(owned.game.history)) {
+    snapshot[hint] = [...words];
+  }
+  return snapshot;
 }
 
 export const GAME_CONFIG = {

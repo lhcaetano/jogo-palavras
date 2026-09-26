@@ -39,6 +39,11 @@ export async function register(req, res) {
       user: { id: user.id, displayName: user.displayName },
     });
   } catch (err) {
+    // Caso raro de corrida: dois cadastros simultaneos com o mesmo nome.
+    // O indice unico do MongoDB barra o segundo (codigo 11000).
+    if (err && err.code === 11000) {
+      return res.status(409).json({ error: 'Esse nome já está em uso.' });
+    }
     console.error('[auth] Erro no cadastro:', err.message);
     return res.status(500).json({ error: 'Erro ao cadastrar.' });
   }
