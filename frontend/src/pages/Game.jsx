@@ -18,6 +18,8 @@ export default function Game() {
   const [flash, setFlash] = useState(''); // mensagem rapida (acerto/erro)
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [celebrating, setCelebrating] = useState(false); // pausa de acerto
+  const [celebrateWord, setCelebrateWord] = useState(null); // palavra acertada
 
   // Inicia uma nova partida ao montar a tela.
   const startNew = useCallback(async () => {
@@ -26,6 +28,8 @@ export default function Game() {
     setRevealedWord(null);
     setFlash('');
     setError('');
+    setCelebrating(false);
+    setCelebrateWord(null);
     try {
       const data = await api.startGame();
       setGameId(data.gameId);
@@ -43,14 +47,38 @@ export default function Game() {
   }, [startNew]);
 
   async function handlePick(letter) {
-    if (busy || status !== 'playing') return;
+    if (busy || celebrating || status !== 'playing') return;
     setBusy(true);
     setFlash('');
     try {
       const res = await api.guessLetter(gameId, letter);
 
+      // Acertou a palavra completa: mostra a palavra revelada com efeito
+      // de comemoracao por ~2s antes de avancar (proxima palavra ou fim).
+      if (res.result === 'correct') {
+        setCelebrating(true);
+        // Revela a palavra inteira na tela (mascara = a propria palavra).
+        setCelebrateWord(res.solvedWord);
+        setWord((w) => (w ? { ...w, mask: res.solvedWord } : w));
+        setFlash(`Acertou a palavra "${res.solvedWord}". +10 pontos`);
+
+        setTimeout(() => {
+          setCelebrating(false);
+          setCelebrateWord(null);
+          setFlash('');
+          if (res.status === 'finished') {
+            if (res.revealedWord) setRevealedWord(res.revealedWord);
+            setSummary(res.summary);
+            setStatus('finished');
+          } else if (res.word) {
+            setWord(res.word);
+          }
+        }, 2000);
+        return;
+      }
+
       if (res.status === 'finished') {
-        // Partida terminou (game over ou 10a palavra completada).
+        // Fim por game over (errou a ultima tentativa).
         if (res.revealedWord) setRevealedWord(res.revealedWord);
         setSummary(res.summary);
         setStatus('finished');
@@ -60,9 +88,7 @@ export default function Game() {
       // Atualiza a visao da palavra.
       if (res.word) setWord(res.word);
 
-      if (res.result === 'correct') {
-        setFlash(`Acertou a palavra "${res.solvedWord}". +10 pontos`);
-      } else if (res.result === 'miss') {
+      if (res.result === 'miss') {
         setFlash('Letra errada. -1 ponto');
       } else if (res.result === 'repeated') {
         setFlash('Você já tentou essa letra.');
@@ -170,7 +196,7 @@ export default function Game() {
         />
         <p className="hint">Dica: {word.hint}</p>
 
-        <WordDisplay mask={word.mask} />
+        <WordDisplay mask={word.mask} celebrating={celebrating} />
 
         <p className="flash">{flash || '\u00A0'}</p>
 
@@ -179,7 +205,7 @@ export default function Game() {
           guessedLetters={word.guessedLetters}
           wrongLetters={word.wrongLetters}
           onPick={handlePick}
-          disabled={busy}
+          disabled={busy || celebrating}
         />
 
         <button className="btn btn-danger" onClick={handleQuit}>

@@ -119,6 +119,27 @@ h2 {
   text-transform: uppercase;
 }
 
+/* Efeito de comemoracao ao acertar a palavra (dura ~2s antes de avancar). */
+.word.celebrating .letter-box.celebrate {
+  color: #10b981;
+  border-bottom-color: #10b981;
+  animation: letter-celebrate 0.6s ease-in-out;
+}
+
+@keyframes letter-celebrate {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-10px) scale(1.2);
+    color: #34d399;
+    text-shadow: 0 0 12px rgba(52, 211, 153, 0.8);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Teclado do alfabeto */
 .alphabet {
   display: grid;
