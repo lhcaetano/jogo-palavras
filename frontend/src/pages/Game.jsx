@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api.js';
 import WordDisplay from '../components/WordDisplay.jsx';
@@ -20,6 +20,15 @@ export default function Game() {
   const [busy, setBusy] = useState(false);
   const [celebrating, setCelebrating] = useState(false); // pausa de acerto
   const [celebrateWord, setCelebrateWord] = useState(null); // palavra acertada
+  const celebrateTimer = useRef(null); // id do setTimeout da celebracao
+
+  // Limpa o timer de celebracao ao desmontar a tela (evita setState em
+  // componente desmontado, ex.: se o jogador sair durante os 2s).
+  useEffect(() => {
+    return () => {
+      if (celebrateTimer.current) clearTimeout(celebrateTimer.current);
+    };
+  }, []);
 
   // Inicia uma nova partida ao montar a tela.
   const startNew = useCallback(async () => {
@@ -28,6 +37,10 @@ export default function Game() {
     setRevealedWord(null);
     setFlash('');
     setError('');
+    if (celebrateTimer.current) {
+      clearTimeout(celebrateTimer.current);
+      celebrateTimer.current = null;
+    }
     setCelebrating(false);
     setCelebrateWord(null);
     try {
@@ -62,7 +75,8 @@ export default function Game() {
         setWord((w) => (w ? { ...w, mask: res.solvedWord } : w));
         setFlash(`Acertou a palavra "${res.solvedWord}". +10 pontos`);
 
-        setTimeout(() => {
+        celebrateTimer.current = setTimeout(() => {
+          celebrateTimer.current = null;
           setCelebrating(false);
           setCelebrateWord(null);
           setFlash('');
@@ -101,6 +115,10 @@ export default function Game() {
   }
 
   async function handleQuit() {
+    if (celebrateTimer.current) {
+      clearTimeout(celebrateTimer.current);
+      celebrateTimer.current = null;
+    }
     if (!gameId) {
       navigate('/');
       return;
