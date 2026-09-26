@@ -62,7 +62,6 @@ export default function Game() {
   async function handlePick(letter) {
     if (busy || celebrating || status !== 'playing') return;
     setBusy(true);
-    setFlash('');
     try {
       const res = await api.guessLetter(gameId, letter);
 
@@ -79,7 +78,9 @@ export default function Game() {
           celebrateTimer.current = null;
           setCelebrating(false);
           setCelebrateWord(null);
-          setFlash('');
+          // A mensagem de acerto ("Acertou a palavra ...") permanece visivel
+          // ao avancar; so sera substituida pelo proximo feedback (erro,
+          // letra repetida ou novo acerto).
           if (res.status === 'finished') {
             if (res.revealedWord) setRevealedWord(res.revealedWord);
             setSummary(res.summary);
